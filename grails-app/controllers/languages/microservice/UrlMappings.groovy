@@ -13,5 +13,6 @@ class UrlMappings {
         "/"(controller: 'api', action:'index')
         "500"(view: '/error')
         "404"(view: '/notFound')
+        "/api/listIso639two"(controller: 'api', action:'listIso639two')
     }
 }
