@@ -237,6 +237,8 @@ environments:
         dataSource:
             dbCreate: none
             url: jdbc:postgresql://localhost:5432/languages
+            driverClassName: org.postgresql.Driver
+            dialect: org.hibernate.dialect.PostgreSQLDialect
             properties:
                 jmxEnabled: true
                 initialSize: 5
