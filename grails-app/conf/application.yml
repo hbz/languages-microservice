@@ -1,5 +1,10 @@
 ---
 grails:
+    config:
+        locations:
+            - ~/.grails/languages-config.groovy
+            - ~/.grails/languages-config.yml
+            - ~/.grails/languages-config.properties
     profile: web
     codegen:
         defaultPackage: languages.microservice
