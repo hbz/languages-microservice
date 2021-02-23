@@ -33,6 +33,7 @@ configurations {
 }
 
 dependencies {
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compileOnly "io.micronaut:micronaut-inject-groovy"
     console "org.grails:grails-console"
