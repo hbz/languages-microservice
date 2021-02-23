@@ -8,7 +8,7 @@ class ApiController implements PluginManagerAware{
 
     GrailsApplication grailsApplication
     GrailsPluginManager pluginManager
-    Iso639Service iso639Service
+    IsoService isoService
 
 
     def index(){
@@ -18,7 +18,7 @@ class ApiController implements PluginManagerAware{
 
     def listIso639two(){
         response.setContentType("application/json")
-        render iso639Service.getIso639Table()
+        render isoService.getIso639Table()
     }
 
 
@@ -35,7 +35,7 @@ class ApiController implements PluginManagerAware{
             render "Missing param targetLanguage"
             return
         }
-        def entry = iso639Service.getIso639Table().get(shortcode)
+        def entry = isoService.getIso639Table().get(shortcode)
         if (entry == null){
             response.status = 404
             render "No language for shortcode ${shortcode}"
