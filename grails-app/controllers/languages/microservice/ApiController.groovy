@@ -1,5 +1,6 @@
 package languages.microservice
 
+import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.plugins.*
 import org.apache.commons.lang.StringUtils
@@ -18,7 +19,7 @@ class ApiController implements PluginManagerAware{
 
     def listIso639two(){
         response.setContentType("application/json")
-        render isoService.getIso639Table()
+        render isoService.getIso639Table() as JSON
     }
 
 
