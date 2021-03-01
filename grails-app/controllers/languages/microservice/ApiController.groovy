@@ -17,12 +17,25 @@ class ApiController implements PluginManagerAware{
     }
 
 
+    /**
+     * This endpoint delivers the full map of all ISO-639-2 language codes together with the names of the languages in
+     * the languages that are stored. By now, these include English, French and German.
+     * @return
+     */
     def listIso639two(){
         response.setContentType("application/json")
         render isoService.getIso639Table() as JSON
     }
 
 
+    /**
+     * This endpoint delivers the name of an ISO-639-2 language code in the language requested.
+     * @param shortcode The shortcode whose language name is requested, e. g. "eng" for English.
+     * @param targetLanguage The shortcode of the language that the language code should be returned in, e. g. "fre" if
+     * the language name shall be in French.
+     * Requesting shortcode="eng"&targetLanguage="fre" will result in "anglais".
+     * @return The full language word specified by the params.
+     */
     def language(){
         String shortcode = params.shortcode
         String targetLanguage = params.targetLanguage
