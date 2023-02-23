@@ -1,12 +1,14 @@
 buildscript {
     repositories {
+        maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.2"
-        classpath "org.grails.plugins:hibernate5:7.1.0.M5"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.2.4"
+        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+        classpath "org.grails.plugins:hibernate5:7.3.0"
+        classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.6"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.4.7"
     }
 }
 
@@ -22,6 +24,7 @@ apply plugin:"com.bertramlabs.asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
 
 repositories {
+    mavenCentral()
     maven { url "https://repo.grails.org/grails/core" }
 }
 
@@ -33,11 +36,12 @@ configurations {
 }
 
 dependencies {
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compileOnly "io.micronaut:micronaut-inject-groovy"
     console "org.grails:grails-console"
     implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.grails:grails-core"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
@@ -55,24 +59,24 @@ dependencies {
     implementation "org.grails.plugins:scaffolding"
     implementation "org.grails.plugins:events"
     implementation "org.grails.plugins:hibernate5"
-    implementation "org.hibernate:hibernate-core:5.4.18.Final"
+    implementation "org.hibernate:hibernate-core:5.6.11.Final"
     implementation "org.grails.plugins:gsp"
     profile "org.grails.profiles:web"
-    runtimeOnly "org.glassfish.web:el-impl:2.1.2-b03"
-    runtimeOnly "com.h2database:h2:1.4.200"
+    runtimeOnly "org.glassfish.web:el-impl:2.2.1-b05"
+    runtimeOnly "com.h2database:h2"
     runtimeOnly "org.apache.tomcat:tomcat-jdbc"
     runtimeOnly "javax.xml.bind:jaxb-api:2.3.1"
-    runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:3.2.4"
+    runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:3.4.7"
     testImplementation "io.micronaut:micronaut-inject-groovy"
     testImplementation "org.grails:grails-gorm-testing-support"
     testImplementation "org.mockito:mockito-core"
     testImplementation "org.grails:grails-web-testing-support"
     testImplementation "org.grails.plugins:geb"
-    testImplementation "org.seleniumhq.selenium:selenium-remote-driver:3.14.0"
-    testImplementation "org.seleniumhq.selenium:selenium-api:3.14.0"
-    testImplementation "org.seleniumhq.selenium:selenium-support:3.14.0"
-    testRuntimeOnly "org.seleniumhq.selenium:selenium-chrome-driver:3.14.0"
-    testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:3.14.0"
+    testImplementation "org.seleniumhq.selenium:selenium-remote-driver:4.0.0"
+    testImplementation "org.seleniumhq.selenium:selenium-api:4.0.0"
+    testImplementation "org.seleniumhq.selenium:selenium-support:4.0.0"
+    testRuntimeOnly "org.seleniumhq.selenium:selenium-chrome-driver:4.0.0"
+    testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:4.0.0"
 }
 
 bootRun {
@@ -98,15 +102,26 @@ tasks.withType(Test) {
 }
 
 webdriverBinaries {
-    chromedriver '2.45.0'
-    geckodriver '0.24.0'
+    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
+        chromedriver {
+            version = '2.45.0'
+            fallbackTo32Bit = true
+        }
+        geckodriver '0.30.0'
+    }
 }
 
 tasks.withType(Test) {
     systemProperty "geb.env", System.getProperty('geb.env')
     systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
-    systemProperty "webdriver.chrome.driver", System.getProperty('webdriver.chrome.driver')
-    systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
+    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
+        systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
+        systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
+    }
+    else {
+        systemProperty 'webdriver.chrome.driver', "${System.getenv('CHROMEWEBDRIVER')}/chromedriver"
+        systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
+    }
 }
 
 
@@ -120,7 +135,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "org.grails.plugins:hibernate5:7.1.0.M5"
+        classpath "org.grails.plugins:hibernate5:7.3.0"
         classpath "org.grails.plugins:views-gradle:2.1.0.M4"
     }
 }
@@ -167,12 +182,12 @@ dependencies {
     implementation "org.grails.plugins:async"
     implementation "org.grails.plugins:events"
     implementation "org.grails.plugins:hibernate5"
-    implementation "org.hibernate:hibernate-core:5.4.18.Final"
+    implementation "org.hibernate:hibernate-core:5.6.11.Final"
     implementation "org.grails.plugins:views-json"
     implementation "org.grails.plugins:views-json-templates"
     profile "org.grails.profiles:rest-api"
-    runtimeOnly "org.glassfish.web:el-impl:2.1.2-b03"
-    runtimeOnly "com.h2database:h2:1.4.200"
+    runtimeOnly "org.glassfish.web:el-impl:2.2.1-b05"
+    runtimeOnly "com.h2database:h2"
     runtimeOnly "org.apache.tomcat:tomcat-jdbc"
     runtimeOnly "javax.xml.bind:jaxb-api:2.3.1"
     testImplementation "io.micronaut:micronaut-inject-groovy"
@@ -181,7 +196,7 @@ dependencies {
     testImplementation "io.micronaut:micronaut-http-client"
     testImplementation "org.grails:grails-web-testing-support"
     testImplementation "org.grails:views-json-testing-support"
-    testImplementation "org.hibernate.validator:hibernate-validator:6.0.20.Final"
+    testImplementation "org.hibernate.validator:hibernate-validator:6.0.23.Final"
 }
 
 bootRun {

@@ -35,10 +35,23 @@ spring:
                 - '**/*.gson'
                 - 'logback.groovy'
                 - '*.properties'
-management:
-    endpoints:
-        enabled-by-default: false
-
+environments:
+    development:
+        management:
+            endpoints:
+                enabled-by-default: true
+                jmx:
+                    unique-names: true
+                web:
+                    base-path: '/actuator'
+                    exposure:
+                        include: '*'
+    production:
+        management:
+            endpoints:
+                enabled-by-default: false
+                jmx:
+                    unique-names: true
 ---
 grails:
     mime:
@@ -91,10 +104,6 @@ grails:
                 scriptlet: html
                 taglib: none
                 staticparts: none
-management:
-    endpoints:
-        jmx:
-            unique-names: true
 
 ---
 hibernate:

@@ -11,7 +11,7 @@ class IsoService{
     static{
         JsonSlurper jsonSlurper = new JsonSlurper()
         File resourceFile
-        String iso639ConfigFile = "${File.separator}ISO-639-2_utf-8_EN_FR_DE.json"
+        String iso639ConfigFile = ".${File.separator}ISO-639-2_utf-8_EN_FR_DE.json"
         try{
             // works for deployments in application servers
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader()
